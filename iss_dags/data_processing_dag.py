@@ -28,13 +28,21 @@ def fetch_data(**kwargs):
 def transform_data(**kwargs):
     ti = kwargs['ti']
     fetched_data = ti.xcom_pull(task_ids='fetch_iss_data_task', key='fetched_data')
+    id = int(Variable.get("id"))
 
     del fetched_data['id']
+    del fetched_data['daynum']
+    del fetched_data['solar_lat']
+    del fetched_data['solar_lon']
+
     fetched_data['velocity'] = round(float(fetched_data['velocity']), 5)
     fetched_data['units'] = "km"
     fetched_data['timestamp'] = datetime.utcfromtimestamp(fetched_data['timestamp']).strftime("%Y-%m-%d %H:%M:%S")
+    fetched_data['visibility'] = True if fetched_data['visibility'] == "daylight" else False
+    fetched_data.update({"id": id})
 
     Variable.set("FETCHED_DATA", fetched_data)
+    Variable.set("id", id + 1)
 
 
 fetch_iss_data_task = PythonOperator(
