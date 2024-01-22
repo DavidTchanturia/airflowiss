@@ -1,9 +1,10 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.models import Variable
+from airflow.models.variable import Variable
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+
 from datetime import datetime, timedelta
 import requests
-
 
 dag = DAG(
     "iss_data_processing",
@@ -33,7 +34,7 @@ def transform_data(**kwargs):
     fetched_data['units'] = "km"
     fetched_data['timestamp'] = datetime.utcfromtimestamp(fetched_data['timestamp']).strftime("%Y-%m-%d %H:%M:%S")
 
-    kwargs['ti'].xcom_push(key='fetched_data', value=fetched_data)
+    Variable.set("FETCHED_DATA", fetched_data)
 
 
 fetch_iss_data_task = PythonOperator(
@@ -50,4 +51,11 @@ transform_iss_data_task = PythonOperator(
     dag=dag
 )
 
-fetch_iss_data_task >> transform_iss_data_task
+# Trigger the second DAG after the completion of the first DAG
+trigger_insert_into_bigquery_dag = TriggerDagRunOperator(
+    task_id="trigger_insert_into_bigquery_dag",
+    trigger_dag_id="insert_into_bigquery",
+    dag=dag
+)
+
+fetch_iss_data_task >> transform_iss_data_task >> trigger_insert_into_bigquery_dag
