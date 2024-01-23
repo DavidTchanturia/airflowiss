@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from datetime import datetime, timedelta
 
-from helpers.utils import fetch_data, transform_data
+from helpers.first_dag_functions import fetch_data, transform_data
 
 dag = DAG(
     "iss_data_processing",

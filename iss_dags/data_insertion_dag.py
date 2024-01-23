@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
 
-from helpers.utils import create_table_if_not_exists, insert_data
+from helpers.second_dag_functions import create_table_if_not_exists, insert_data
 
 dag = DAG(
     dag_id='insert_into_bigquery',
