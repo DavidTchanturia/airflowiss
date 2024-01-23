@@ -9,9 +9,9 @@ import requests
 dag = DAG(
     "iss_data_processing",
     start_date=datetime(2024, 1, 21),
-    schedule_interval=timedelta(hours=1)
+    schedule_interval=timedelta(hours=1),
+    catchup=False
 )
-
 
 def fetch_data(**kwargs):
     api_url = Variable.get("API_URL")
@@ -59,7 +59,6 @@ transform_iss_data_task = PythonOperator(
     dag=dag
 )
 
-# Trigger the second DAG after the completion of the first DAG
 trigger_insert_into_bigquery_dag = TriggerDagRunOperator(
     task_id="trigger_insert_into_bigquery_dag",
     trigger_dag_id="insert_into_bigquery",
