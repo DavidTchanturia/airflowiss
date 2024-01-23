@@ -3,6 +3,10 @@ from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 from datetime import datetime
 import ast
 import requests
+import sys
+
+# sys.path.append('/home/user/Sweeft/Projects/airflow_iss/iss_dags/helpers/contants.py')
+from helpers.contants import schema
 
 
 def get_credentials() -> dict:
@@ -74,18 +78,6 @@ def create_table_if_not_exists():
     credentials = get_credentials()
 
     hook = BigQueryHook(credentials["BIGQUERY_CONN_ID"])
-    schema = [
-        {"name": "id", "type": "INTEGER", "mode": "REQUIRED"},
-        {"name": "name", "type": "STRING", "mode": "REQUIRED"},
-        {"name": "latitude", "type": "FLOAT", "mode": "REQUIRED"},
-        {"name": "longitude", "type": "FLOAT", "mode": "REQUIRED"},
-        {"name": "altitude", "type": "FLOAT", "mode": "REQUIRED"},
-        {"name": "velocity", "type": "FLOAT", "mode": "NULLABLE"},
-        {"name": "visibility", "type": "BOOLEAN", "mode": "NULLABLE"},
-        {"name": "footprint", "type": "FLOAT", "mode": "NULLABLE"},
-        {"name": "timestamp", "type": "TIMESTAMP", "mode": "REQUIRED"},
-        {"name": "units", "type": "STRING", "mode": "REQUIRED", "description": "STRING(25)"},
-    ]
 
     hook.create_empty_table(
         project_id=credentials["PROJECT_ID"],
