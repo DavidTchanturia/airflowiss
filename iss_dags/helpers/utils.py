@@ -5,7 +5,10 @@ import ast
 import requests
 
 
-def get_credentials():
+def get_credentials() -> dict:
+    """all the necessary variables have been defined in airflow UI
+    function retrieves credentials from the airflow variables. returns them as dict"""
+
     BIGQUERY_CONN_ID = Variable.get("BIGQUERY_CONN_ID")
     PROJECT_ID = Variable.get("PROJECT_ID")
     DATASET_ID = Variable.get("DATASET_ID")
@@ -19,7 +22,12 @@ def get_credentials():
 
 
 #################################### these are for the first dag ########################################
-def fetch_data(**kwargs):
+def fetch_data(**kwargs) -> None:
+    """fetches data from the url present in variables on bigquery
+
+    pushes the response to xcom as a json
+    """
+
     api_url = Variable.get("API_URL")
 
     if not api_url:
@@ -31,7 +39,17 @@ def fetch_data(**kwargs):
     kwargs['ti'].xcom_push(key='fetched_data', value=data)
 
 
-def transform_data(**kwargs):
+def transform_data(**kwargs) -> None:
+    """
+    retrieves pushed data to xcom by fetch_data function
+
+    besides basic transformation, adds id field to it, which is a variable on airflow as well,
+    each time id is incremented by one
+
+    instead of pushing transformed data to xcom, pushes it to variable. Since this data needs to be
+    accessed by another dag
+    """
+
     ti = kwargs['ti']
     fetched_data = ti.xcom_pull(task_ids='fetch_iss_data_task', key='fetched_data')
     id = int(Variable.get("id"))
