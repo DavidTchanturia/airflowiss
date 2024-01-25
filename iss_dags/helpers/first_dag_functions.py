@@ -51,10 +51,10 @@ def transform_data(**kwargs) -> None:
     fetched_data = ti.xcom_pull(task_ids='fetch_iss_data_task', key='fetched_data')
     id = int(Variable.get("id"))
 
-    del fetched_data['id']
-    del fetched_data['daynum']
-    del fetched_data['solar_lat']
-    del fetched_data['solar_lon']
+    fetched_data.pop('id')
+    fetched_data.pop('daynum')
+    fetched_data.pop('solar_lat')
+    fetched_data.pop('solar_lon')
 
     fetched_data['velocity'] = round(float(fetched_data['velocity']), 5)
     fetched_data['units'] = "km"
