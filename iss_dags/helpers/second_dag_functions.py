@@ -22,9 +22,8 @@ def insert_data(**kwargs):
     credentials = get_credentials()
 
     conf_from_trigger = kwargs['dag_run'].conf
-    data_to_insert = conf_from_trigger.get("data_to_insert")
+    data_dict = conf_from_trigger.get("data_to_insert")
 
-    data_dict = ast.literal_eval(data_to_insert)
     hook = BigQueryHook(credentials["BIGQUERY_CONN_ID"])
 
     hook.insert_all(
