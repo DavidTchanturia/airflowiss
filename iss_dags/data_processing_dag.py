@@ -1,9 +1,9 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
 
-from airflow.utils.trigger_rule import TriggerRule
 
 from helpers.first_dag_functions import fetch_data, transform_data
 
@@ -31,6 +31,7 @@ transform_iss_data_task = PythonOperator(
 trigger_insert_into_bigquery_dag = TriggerDagRunOperator(
     task_id="trigger_insert_into_bigquery_dag",
     trigger_dag_id="insert_into_bigquery",
+    conf={"data_to_insert": "{{ task_instance.xcom_pull(task_ids='transform_iss_data_task', key='FETCHED_DATA') }}"},
     trigger_rule=TriggerRule.ALL_SUCCESS,
     dag=dag
 )
