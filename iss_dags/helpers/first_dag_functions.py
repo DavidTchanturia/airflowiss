@@ -62,5 +62,5 @@ def transform_data(**kwargs) -> None:
     fetched_data['visibility'] = True if fetched_data['visibility'] == "daylight" else False
     fetched_data.update({"id": id})
 
-    Variable.set("FETCHED_DATA", fetched_data)
     Variable.set("id", id + 1)
+    kwargs['ti'].xcom_push(key='FETCHED_DATA', value=fetched_data)
