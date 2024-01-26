@@ -18,12 +18,14 @@ def create_table_if_not_exists():
     )
 
 
-def insert_data():
+def insert_data(**kwargs):
     credentials = get_credentials()
 
-    hook = BigQueryHook(credentials["BIGQUERY_CONN_ID"])
+    conf_from_trigger = kwargs['dag_run'].conf
+    data_to_insert = conf_from_trigger.get("data_to_insert")
 
-    data_dict = ast.literal_eval(credentials["FETCHED_DATA"])  # had to use this because it looked like a dict but was a str
+    data_dict = ast.literal_eval(data_to_insert)
+    hook = BigQueryHook(credentials["BIGQUERY_CONN_ID"])
 
     hook.insert_all(
         project_id=credentials["PROJECT_ID"],
