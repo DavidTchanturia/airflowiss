@@ -11,6 +11,7 @@ dag = DAG(
     "iss_data_processing",
     start_date=datetime(2024, 1, 21),
     schedule_interval=timedelta(hours=1),
+    render_template_as_native_obj=True,
     catchup=False
 )
 

@@ -8,6 +8,7 @@ dag = DAG(
     dag_id='insert_into_bigquery',
     start_date=datetime(2024, 1, 20),
     schedule_interval=None,
+    render_template_as_native_obj=True,
     catchup=False
 )
 
